@@ -1,0 +1,6 @@
+framework module Pods_Warg_Example {
+  umbrella header "Pods-Warg_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

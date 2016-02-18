@@ -22,7 +22,7 @@ public extension UIView {
         }
     }
     
-    public func firstReadbleColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) -> UIColor? {
+    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) -> UIColor? {
         
         let image = getColorFromCaptureRect(rect, view: self)
         let color = averageColor(image)

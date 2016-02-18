@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         self.backgroundIV.image = UIImage(named: imageName)
         self.view.layoutIfNeeded()
         
-        if let madeColor = self.backgroundIV.firstReadbleColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear) {
+        if let madeColor = self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear) {
             
             self.refreshButton.tintColor = madeColor
         }

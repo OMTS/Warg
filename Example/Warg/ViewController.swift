@@ -11,26 +11,43 @@ import Warg
 
 class ViewController: UIViewController {
 
+    
     @IBOutlet weak var refreshButton: UIButton!
     @IBOutlet weak var backgroundIV: UIImageView!
+    var lastImageIndex = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
         updatePicture(self.refreshButton)
     }
-
+    
     @IBAction func updatePicture(sender: UIButton) {
-        let random = arc4random() % 4
+        var random = arc4random() % 4
+        while Int(random) == lastImageIndex {
+            random = arc4random() % 4
+        }
+        lastImageIndex = Int(random)
+        
         let imageName = "\(random)"
         self.backgroundIV.image = UIImage(named: imageName)
         self.view.layoutIfNeeded()
         
-        if let madeColor = self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear) {
-            
-            self.refreshButton.tintColor = madeColor
+        do {
+            if let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear) {
+                
+                self.refreshButton.tintColor = madeColor
+            }
+            else {
+                self.refreshButton.tintColor = UIColor.redColor()
+            }
         }
-        else {
+        catch Warg.WargError.InvalidBackgroundContent(let reason) {
+            print(reason)
             self.refreshButton.tintColor = UIColor.redColor()
+        }
+        catch {
+            print("generic error")
+            
         }
     }
 }

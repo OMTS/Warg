@@ -9,8 +9,12 @@
 import Foundation
 import UIKit
 
-public extension UIView {
+public enum WargError: ErrorType {
+    case InvalidBackgroundContent(reason: String)
+}
 
+public extension UIView {
+    
     public enum ColorMatchingStrategy {
         case ColorMatchingStrategyLinear
         
@@ -22,10 +26,14 @@ public extension UIView {
         }
     }
     
-    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) -> UIColor? {
+    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor? {
         
-        let image = getColorFromCaptureRect(rect, view: self)
+        guard let image = getColorFromCaptureRect(rect, view: self) else {
+            throw WargError.InvalidBackgroundContent (reason: "Cannot get color from background")
+        }
+        
         let color = averageColor(image)
+        
         if let prefColor = preferredColor {
             return readableColorColorForBackgroundColor(color, fromColor:prefColor, strategy: strategy)
         }
@@ -46,14 +54,23 @@ public extension UIView {
         return NSString(format:"#%06x", rgb) as String
     }
     
-    private func getColorFromCaptureRect(rect: CGRect, view: UIView) -> UIImage {
-        UIGraphicsBeginImageContext(view.bounds.size);
-        view.layer.renderInContext(UIGraphicsGetCurrentContext()!);
-        let viewImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        let imageRef = CGImageCreateWithImageInRect(viewImage.CGImage, rect);
-        let img = UIImage(CGImage: imageRef!)
-        return img;
+    private func getColorFromCaptureRect(rect: CGRect, view: UIView) -> UIImage? {
+        UIGraphicsBeginImageContext(view.bounds.size)
+        if let context = UIGraphicsGetCurrentContext() {
+            view.layer.renderInContext(context)
+        }
+        else {
+            return nil
+        }
+        let viewImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        if let imageRef = CGImageCreateWithImageInRect(viewImage.CGImage, rect) {
+            let img = UIImage(CGImage: imageRef)
+            return img
+        }
+        else {
+            return nil
+        }
     }
     
     private func averageColor(image: UIImage) -> UIColor {
@@ -130,7 +147,7 @@ public extension UIView {
         let count = CGColorGetNumberOfComponents(fromColor.CGColor);
         let componentColors = CGColorGetComponents(fromColor.CGColor);
         var madeColor: UIColor?
-
+        
         var r = 0.0
         var g = 0.0
         var b = 0.0

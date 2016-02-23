@@ -9,26 +9,26 @@
 import Foundation
 import UIKit
 
+public enum ColorMatchingStrategy {
+    case ColorMatchingStrategyLinear
+    
+    public var name: String {
+        switch self {
+        case .ColorMatchingStrategyLinear:
+            return "Linear Strategy"
+        }
+    }
+}
+
 public enum WargError: ErrorType {
     case InvalidBackgroundContent(reason: String)
 }
 
 public extension UIView {
-    
-    public enum ColorMatchingStrategy {
-        case ColorMatchingStrategyLinear
-        
-        var name: String {
-            switch self {
-            case .ColorMatchingStrategyLinear:
-                return "Linear Strategy"
-            }
-        }
-    }
-    
+   
     public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor? {
         
-        guard let image = getColorFromCaptureRect(rect, view: self) else {
+        guard let image = getImageCaptureRect(rect, view: self) else {
             throw WargError.InvalidBackgroundContent (reason: "Cannot get color from background")
         }
         
@@ -54,7 +54,7 @@ public extension UIView {
         return NSString(format:"#%06x", rgb) as String
     }
     
-    private func getColorFromCaptureRect(rect: CGRect, view: UIView) -> UIImage? {
+    private func getImageCaptureRect(rect: CGRect, view: UIView) -> UIImage? {
         UIGraphicsBeginImageContext(view.bounds.size)
         if let context = UIGraphicsGetCurrentContext() {
             view.layer.renderInContext(context)

@@ -33,13 +33,9 @@ class ViewController: UIViewController {
         self.view.layoutIfNeeded()
         
         do {
-            if let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear) {
+            let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear)
                 
-                self.refreshButton.tintColor = madeColor
-            }
-            else {
-                self.refreshButton.tintColor = UIColor.redColor()
-            }
+            self.refreshButton.tintColor = madeColor
         }
         catch Warg.WargError.InvalidBackgroundContent(let reason) {
             print(reason)

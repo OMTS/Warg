@@ -26,7 +26,7 @@ public enum WargError: ErrorType {
 
 public extension UIView {
    
-    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor? {
+    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor {
         
         guard let image = getImageCaptureRect(rect, view: self) else {
             throw WargError.InvalidBackgroundContent (reason: "Cannot get color from background")
@@ -142,11 +142,11 @@ public extension UIView {
     }
     
     
-    private func readableColorColorForBackgroundColor(backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor? {
+    private func readableColorColorForBackgroundColor(backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
         let bgDarknessScore = darknessScoreOfColor(backgroundColor)
         let count = CGColorGetNumberOfComponents(fromColor.CGColor);
         let componentColors = CGColorGetComponents(fromColor.CGColor);
-        var madeColor: UIColor?
+        var madeColor = fromColor
         
         var r = 0.0
         var g = 0.0
@@ -184,16 +184,16 @@ public extension UIView {
                     
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
-                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor!))
+                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
                     
-                    let madeColorDarkness = darknessScoreOfColor(madeColor!)
-                    let colordifference = colorScoreDifference(backgroundColor, color2:madeColor!)
+                    let madeColorDarkness = darknessScoreOfColor(madeColor)
+                    let colordifference = colorScoreDifference(backgroundColor, color2:madeColor)
                     
                     print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                     
                     if (fabs(madeColorDarkness - bgDarknessScore)  >= 125.0 && colordifference >= 300.0) {
                         print("\n==================================================")
-                        print("Elected Candidate " + hexStringFromColor(madeColor!))
+                        print("Elected Candidate " + hexStringFromColor(madeColor))
                         print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                         print("==================================================\n")
                         break
@@ -217,16 +217,16 @@ public extension UIView {
                     
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
-                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor!))
+                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
                     
-                    let madeColorDarkness = darknessScoreOfColor(madeColor!)
-                    let colordifference = colorScoreDifference(backgroundColor, color2:madeColor!)
+                    let madeColorDarkness = darknessScoreOfColor(madeColor)
+                    let colordifference = colorScoreDifference(backgroundColor, color2:madeColor)
                     
                     print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                     
                     if (fabs(madeColorDarkness - bgDarknessScore)  >= 125.0 && colordifference >= 300.0) {
                         print("\n=============================================================")
-                        print("Elected Candidate " + hexStringFromColor(madeColor!))
+                        print("Elected Candidate " + hexStringFromColor(madeColor))
                         print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                         print("=============================================================\n")
                         break
@@ -234,7 +234,6 @@ public extension UIView {
                 }
             }
         }
-        
         return madeColor
     }
 }

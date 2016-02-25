@@ -37,13 +37,11 @@ class ViewController: UIViewController {
                 
             self.refreshButton.tintColor = madeColor
         }
-        catch Warg.WargError.InvalidBackgroundContent(let reason) {
-            print(reason)
+        catch Warg.WargError.InvalidBackgroundContent {
             self.refreshButton.tintColor = UIColor.redColor()
         }
         catch {
             print("generic error")
-            
         }
     }
 }

@@ -21,7 +21,7 @@ public enum ColorMatchingStrategy {
 }
 
 public enum WargError: ErrorType {
-    case InvalidBackgroundContent(reason: String)
+    case InvalidBackgroundContent
 }
 
 public extension UIView {
@@ -29,7 +29,7 @@ public extension UIView {
     public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor {
         
         guard let image = getImageCaptureRect(rect, view: self) else {
-            throw WargError.InvalidBackgroundContent (reason: "Cannot get color from background")
+            throw WargError.InvalidBackgroundContent
         }
         
         let color = averageColor(image)
@@ -43,13 +43,13 @@ public extension UIView {
     }
     
     private func hexStringFromColor(color: UIColor) -> String {
-        var r:CGFloat = 0
-        var g:CGFloat = 0
-        var b:CGFloat = 0
-        var a:CGFloat = 0
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
         
         color.getRed(&r, green: &g, blue: &b, alpha: &a)
-        let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
         
         return NSString(format:"#%06x", rgb) as String
     }
@@ -167,6 +167,7 @@ public extension UIView {
         print("\nFind right color using " + strategy.name)
         
         if strategy == .ColorMatchingStrategyLinear {
+           
             if (bgDarknessScore >= 125) {
                 //Background is made of a light color
                 //We have to decrease RGB values of the from color
@@ -181,6 +182,11 @@ public extension UIView {
                     r = r > 1.0 ? r * Double(factor) : 0.0;
                     g = g > 1.0 ? g * Double(factor) : 0.0;
                     b = b > 1.0 ? b * Double(factor) : 0.0;
+                    
+                    //Rounding down the doubles
+                    r = floor(r)
+                    g = floor(g)
+                    b = floor(b)
                     
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
@@ -201,6 +207,7 @@ public extension UIView {
                 }
             }
             else {
+                
                 //Background is made of a dark color
                 //We have to increase RGB values of the from color
                 print("******")
@@ -215,6 +222,11 @@ public extension UIView {
                     g = g < 255.0 ? (g + g * Double(factor) + 1.0) : 255.0
                     b = b < 255.0 ? (b + b * Double(factor) + 1.0) : 255.0
                     
+                    //Rounding down the doubles
+                    r = floor(r)
+                    g = floor(g)
+                    b = floor(b)
+
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
                     print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))

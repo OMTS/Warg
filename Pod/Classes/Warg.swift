@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import ObjectiveC
+
 
 public enum ColorMatchingStrategy {
     case ColorMatchingStrategyLinear
@@ -24,9 +26,16 @@ public enum WargError: ErrorType {
     case InvalidBackgroundContent
 }
 
+// Declare a global var to produce a unique address as the assoc object handle
+var isVerbose = false
+
+
 public extension UIView {
-   
-    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear) throws -> UIColor {
+    
+    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear, isVerbose: Bool = false) throws -> UIColor {
+        
+        //Setting the debug opt-in
+        self.isVerbose = isVerbose
         
         guard let image = getImageCaptureRect(rect, view: self) else {
             throw WargError.InvalidBackgroundContent
@@ -143,6 +152,7 @@ public extension UIView {
     
     
     private func readableColorColorForBackgroundColor(backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
+        
         let bgDarknessScore = darknessScoreOfColor(backgroundColor)
         let count = CGColorGetNumberOfComponents(fromColor.CGColor);
         let componentColors = CGColorGetComponents(fromColor.CGColor);
@@ -162,18 +172,17 @@ public extension UIView {
             g = Double(componentColors[1] * CGFloat(255.0))
             b = Double(componentColors[2] * CGFloat(255.0))
         }
-        
-        print("\nBackground color: " + hexStringFromColor(backgroundColor)  + "\n")
-        print("\nFind right color using " + strategy.name)
-        
+        wargPrint("\nBackground color: " + hexStringFromColor(backgroundColor)  + "\n")
+        wargPrint("\nFind right color using " + strategy.name)
+
         if strategy == .ColorMatchingStrategyLinear {
            
             if (bgDarknessScore >= 125) {
                 //Background is made of a light color
                 //We have to decrease RGB values of the from color
-                print("******")
-                print("Decreasing")
-                print("******\n")
+                wargPrint("******")
+                wargPrint("Decreasing")
+                wargPrint("******\n")
                 
                 for var index = 55; index > 0; index-- {
                     
@@ -190,18 +199,20 @@ public extension UIView {
                     
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
-                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
+                    
+                    wargPrint((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
+                
                     
                     let madeColorDarkness = darknessScoreOfColor(madeColor)
                     let colordifference = colorScoreDifference(backgroundColor, color2:madeColor)
                     
-                    print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
+                    wargPrint("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                     
                     if (fabs(madeColorDarkness - bgDarknessScore)  >= 125.0 && colordifference >= 300.0) {
-                        print("\n==================================================")
-                        print("Elected Candidate " + hexStringFromColor(madeColor))
-                        print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
-                        print("==================================================\n")
+                        wargPrint("\n==================================================")
+                        wargPrint("Elected Candidate " + hexStringFromColor(madeColor))
+                        wargPrint("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
+                        wargPrint("==================================================\n")
                         break
                     }
                 }
@@ -210,9 +221,9 @@ public extension UIView {
                 
                 //Background is made of a dark color
                 //We have to increase RGB values of the from color
-                print("******")
-                print("Increasing")
-                print("******\n")
+                wargPrint("******")
+                wargPrint("Increasing")
+                wargPrint("******\n")
                 
                 for var index = 0; index < 55; index++ {
                     
@@ -229,23 +240,46 @@ public extension UIView {
 
                     madeColor = UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: 1)
                     let factorFormatted = NSString(format: "%.2f", factor * 100.0)
-                    print((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
+                    wargPrint((factorFormatted as String) + "% Candidate " + hexStringFromColor(madeColor))
                     
                     let madeColorDarkness = darknessScoreOfColor(madeColor)
                     let colordifference = colorScoreDifference(backgroundColor, color2:madeColor)
                     
-                    print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
+                    wargPrint("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
                     
                     if (fabs(madeColorDarkness - bgDarknessScore)  >= 125.0 && colordifference >= 300.0) {
-                        print("\n=============================================================")
-                        print("Elected Candidate " + hexStringFromColor(madeColor))
-                        print("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
-                        print("=============================================================\n")
+                        wargPrint("\n=============================================================")
+                        wargPrint("Elected Candidate " + hexStringFromColor(madeColor))
+                        wargPrint("BDiff \(fabs(madeColorDarkness - bgDarknessScore)) - CDiff \(colordifference)")
+                        wargPrint("=============================================================\n")
                         break
                     }
                 }
             }
         }
         return madeColor
+    }
+}
+
+//Debugging extension
+extension UIView {
+    
+    struct GlobalVariables {
+        static var staticKey: Int = 42
+    }
+    
+    var isVerbose: Bool {
+        get {
+            return objc_getAssociatedObject(self, &GlobalVariables.staticKey) as! Bool
+        }
+        set {
+            objc_setAssociatedObject(self, &GlobalVariables.staticKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    func wargPrint(message: String) {
+        if self.isVerbose {
+            print(message)
+        }
     }
 }

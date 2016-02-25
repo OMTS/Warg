@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         self.view.layoutIfNeeded()
         
         do {
-            let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear)
+            let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear, isVerbose: true)
                 
             self.refreshButton.tintColor = madeColor
         }

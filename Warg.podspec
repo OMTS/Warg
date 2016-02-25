@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Warg"
-  s.version          = "0.1.1"
+  s.version          = "0.1.2"
   s.summary          = "An acceibility UIView extension that makes icons and text visible on any background"
 
   s.description      = <<-DESC
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'Warg' => ['Pod/Assets/*.png']
   }
-
+  
 end

@@ -4,7 +4,7 @@ import Warg
 
 class WargSpec: QuickSpec {
     
-    //Helper method
+    //Helper method based on https://gist.github.com/yannickl/16f0ed38f0698d9a8ae7
     private func colorWithHexString(string: String) -> UIColor {
         let hexString: NSString = string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
         let scanner            = NSScanner(string: hexString as String)

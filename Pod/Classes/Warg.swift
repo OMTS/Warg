@@ -10,10 +10,16 @@ import Foundation
 import UIKit
 import ObjectiveC
 
+/**
+ The strategy used to find the right forground color
+ 
+ - ColorMatchingStrategyLinear: The same factor is applied to the RGB values when incrasing or decreasing them
+ */
 
 public enum ColorMatchingStrategy {
     case ColorMatchingStrategyLinear
     
+    /// The human readable name of the strategy
     public var name: String {
         switch self {
         case .ColorMatchingStrategyLinear:
@@ -22,15 +28,31 @@ public enum ColorMatchingStrategy {
     }
 }
 
+
+/**
+ Warg Error Types
+ - InvalidBackgroundContent: The extension is unable to make colors computations (average color) on the background (for exemple a CGRectZero value is passed as the computation Rect).
+ */
 public enum WargError: ErrorType {
     case InvalidBackgroundContent
 }
 
-// Declare a global var to produce a unique address as the assoc object handle
-var isVerbose = false
-
 
 public extension UIView {
+    
+    /**
+     Returns the first visible color by humans for a foreground content when displayed on the top of the receiver.
+     
+     - Parameter rect:  The rect (in the receiver coordinates) in which the forground content will be displayed.
+     - Parameter preferredColor: The color that you would preferaly like to use (this is usually the color given by a creative). This param is optional and the default value will be the color of the receiver in the rect provided.
+     - Parameter strategy: The startegy that will be applied when modifying the prefered color to find the first visible one. This param is optional and the default value is ColorMatchingStrategy.ColorMatchingStrategyLinear.
+     - Parameter isVerbose: A boolean indicating if the alogithm should print all the steps during computation. This param is optional and the default value is false.
+
+     
+     - Throws: `WargError.InvalidBackgroundContent` if the rect parameter does not permit colors computations (for exemple a CGRectZero value).
+     
+     - Returns: The first visible color found.
+     */
     
     public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear, isVerbose: Bool = false) throws -> UIColor {
         
@@ -262,7 +284,7 @@ public extension UIView {
 }
 
 //Debugging extension
-extension UIView {
+private extension UIView {
     
     struct GlobalVariables {
         static var staticKey: Int = 42

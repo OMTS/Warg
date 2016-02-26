@@ -1,28 +1,18 @@
-#
-# Be sure to run `pod lib lint Warg.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
-
 Pod::Spec.new do |s|
   s.name             = "Warg"
-  s.version          = "0.1.0"
-  s.summary          = "Summury"
+  s.version          = "0.1.2"
+  s.summary          = "An acceibility UIView extension that makes icons and text visible on any background"
 
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!  
-  s.description      = "Description"
+  s.description      = <<-DESC
+  The Warg extension will give any UIView the ability to expose a displayable forground color
+  based on the W3C accessibility technics for color and contrast : http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
+  DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/Warg"
+  s.homepage         = "https://github.com/OMTS/Warg.git"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "Iman Zarrabian" => "iman@omts.fr" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/Warg.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/OMTS/Warg.git", :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.platform     = :ios, '8.0'
@@ -32,8 +22,5 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'Warg' => ['Pod/Assets/*.png']
   }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  
 end

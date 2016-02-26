@@ -17,10 +17,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="kobe" translatesAutoresizingMaskIntoConstraints="NO" id="jcD-M4-C19">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="kobe" translatesAutoresizingMaskIntoConstraints="NO" id="jcD-M4-C19">
                                 <rect key="frame" x="132" y="132" width="336" height="336"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bar-6O-eLp">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bar-6O-eLp">
                                 <rect key="frame" x="408" y="142" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="eak-jj-MyH"/>

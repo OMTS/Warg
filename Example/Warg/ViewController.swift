@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         updatePicture(self.refreshButton)
     }
     
-    @IBAction func updatePicture(sender: UIButton) {
+    @IBAction func updatePicture(_ sender: UIButton) {
         var random = arc4random() % 4
         while Int(random) == lastImageIndex {
             random = arc4random() % 4
@@ -33,12 +33,12 @@ class ViewController: UIViewController {
         self.view.layoutIfNeeded()
         
         do {
-            let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.redColor(), strategy: .ColorMatchingStrategyLinear, isVerbose: true)
+            let madeColor = try self.backgroundIV.firstReadableColorInRect(self.refreshButton.frame, preferredColor: UIColor.red, strategy: .colorMatchingStrategyLinear, isVerbose: true)
                 
             self.refreshButton.tintColor = madeColor
         }
-        catch Warg.WargError.InvalidBackgroundContent {
-            self.refreshButton.tintColor = UIColor.redColor()
+        catch Warg.WargError.invalidBackgroundContent {
+            self.refreshButton.tintColor = UIColor.red
         }
         catch {
             print("generic error")

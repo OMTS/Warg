@@ -17,12 +17,12 @@ import ObjectiveC
  */
 
 public enum ColorMatchingStrategy {
-    case ColorMatchingStrategyLinear
+    case colorMatchingStrategyLinear
     
     /// The human readable name of the strategy
     public var name: String {
         switch self {
-        case .ColorMatchingStrategyLinear:
+        case .colorMatchingStrategyLinear:
             return "Linear Strategy"
         }
     }
@@ -33,8 +33,8 @@ public enum ColorMatchingStrategy {
  Warg Error Types
  - InvalidBackgroundContent: The extension is unable to make colors computations (average color) on the background (for exemple a CGRectZero value is passed as the computation Rect).
  */
-public enum WargError: ErrorType {
-    case InvalidBackgroundContent
+public enum WargError: Error {
+    case invalidBackgroundContent
 }
 
 
@@ -54,13 +54,13 @@ public extension UIView {
      - Returns: The first visible color found.
      */
     
-    public func firstReadableColorInRect(rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .ColorMatchingStrategyLinear, isVerbose: Bool = false) throws -> UIColor {
+    public func firstReadableColorInRect(_ rect: CGRect, preferredColor: UIColor? = nil, strategy: ColorMatchingStrategy = .colorMatchingStrategyLinear, isVerbose: Bool = false) throws -> UIColor {
         
         //Setting the debug opt-in
         self.isVerbose = isVerbose
         
         guard let image = getImageCaptureRect(rect, view: self) else {
-            throw WargError.InvalidBackgroundContent
+            throw WargError.invalidBackgroundContent
         }
         
         let color = averageColor(image)
@@ -73,7 +73,7 @@ public extension UIView {
         }
     }
     
-    private func hexStringFromColor(color: UIColor) -> String {
+    fileprivate func hexStringFromColor(_ color: UIColor) -> String {
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
@@ -85,18 +85,18 @@ public extension UIView {
         return NSString(format:"#%06x", rgb) as String
     }
     
-    private func getImageCaptureRect(rect: CGRect, view: UIView) -> UIImage? {
+    fileprivate func getImageCaptureRect(_ rect: CGRect, view: UIView) -> UIImage? {
         UIGraphicsBeginImageContext(view.bounds.size)
         if let context = UIGraphicsGetCurrentContext() {
-            view.layer.renderInContext(context)
+            view.layer.render(in: context)
         }
         else {
             return nil
         }
         let viewImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        if let imageRef = CGImageCreateWithImageInRect(viewImage.CGImage, rect) {
-            let img = UIImage(CGImage: imageRef)
+        if let imageRef = viewImage?.cgImage?.cropping(to: rect) {
+            let img = UIImage(cgImage: imageRef)
             return img
         }
         else {
@@ -104,19 +104,19 @@ public extension UIView {
         }
     }
     
-    private func averageColor(image: UIImage) -> UIColor {
+    fileprivate func averageColor(_ image: UIImage) -> UIColor {
         //Based on Mircea "Bobby" Georgescu work http://www.bobbygeorgescu.com/2011/08/finding-average-color-of-uiimage/
         
         let colorSpace = CGColorSpaceCreateDeviceRGB();
         
-        let rgba = UnsafeMutablePointer<CUnsignedChar>.alloc(4)
+        let rgba = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: 4)
         
-        var bitmapInfo =  CGBitmapInfo(rawValue: CGImageAlphaInfo.PremultipliedLast.rawValue)
-        let rawBitmapInfo = bitmapInfo.rawValue | CGBitmapInfo.ByteOrder32Big.rawValue
+        var bitmapInfo =  CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+        let rawBitmapInfo = bitmapInfo.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
         bitmapInfo = CGBitmapInfo(rawValue: rawBitmapInfo)
         
-        let context = CGBitmapContextCreate(rgba, 1, 1, 8, 4, colorSpace, bitmapInfo.rawValue)
-        CGContextDrawImage(context, CGRectMake(0, 0, 1, 1), image.CGImage)
+        let context = CGContext(data: rgba, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue)
+        context?.draw(image.cgImage!, in: CGRect(x: 0, y: 0, width: 1, height: 1))
         
         if(CGFloat(rgba[3]) > 0) {
             let alpha = CGFloat(CGFloat(rgba[3])/255.0)
@@ -130,40 +130,40 @@ public extension UIView {
     }
     
     
-    private func darknessScoreOfColor(color: UIColor) -> CGFloat {
+    fileprivate func darknessScoreOfColor(_ color: UIColor) -> CGFloat {
         //Using the W3C constrast technics http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
         
-        let count = CGColorGetNumberOfComponents(color.CGColor)
-        let componentColors = CGColorGetComponents(color.CGColor)
+        let count = color.cgColor.numberOfComponents
+        let componentColors = color.cgColor.components
         var darknessScore = 0.0
         if (count == 2) {
-            let a = (componentColors[0]*255) * 299
-            let b = (componentColors[0]*255) * 587
-            let c = (componentColors[0]*255) * 114
+            let a = ((componentColors?[0])!*255) * 299
+            let b = ((componentColors?[0])!*255) * 587
+            let c = ((componentColors?[0])!*255) * 114
             darknessScore = Double(a + b + c) / 1000
         } else if (count == 4) {
-            let a = (componentColors[0]*255) * 299
-            let b = (componentColors[1]*255) * 587
-            let c = (componentColors[2]*255) * 114
+            let a = ((componentColors?[0])!*255) * 299
+            let b = ((componentColors?[1])!*255) * 587
+            let c = ((componentColors?[2])!*255) * 114
             
             darknessScore = Double (a + b + c) / 1000
         }
         return CGFloat(darknessScore)
     }
     
-    private func colorScoreDifference(color1: UIColor, color2: UIColor) -> CGFloat {
+    fileprivate func colorScoreDifference(_ color1: UIColor, color2: UIColor) -> CGFloat {
         //Using the W3C constrast technics http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
         //Color difference is determined by the following formula
         
-        let componentColors1 = CGColorGetComponents(color1.CGColor);
-        let componentColors2 = CGColorGetComponents(color2.CGColor);
+        let componentColors1 = color1.cgColor.components;
+        let componentColors2 = color2.cgColor.components;
         
-        let red1 = componentColors1[0]*255
-        let red2 = componentColors2[0]*255
-        let green1 = componentColors1[1]*255
-        let green2 = componentColors2[1]*255
-        let blue1 = componentColors1[2]*255
-        let blue2 = componentColors2[2]*255
+        let red1 = (componentColors1?[0])!*255
+        let red2 = (componentColors2?[0])!*255
+        let green1 = (componentColors1?[1])!*255
+        let green2 = (componentColors2?[1])!*255
+        let blue1 = (componentColors1?[2])!*255
+        let blue2 = (componentColors2?[2])!*255
         
         let firstOperand = max(red1, red2) - min(red1, red2)
         let secondoperand = max(green1, green2) - min(green1, green2)
@@ -173,11 +173,11 @@ public extension UIView {
     }
     
     
-    private func readableColorColorForBackgroundColor(backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
+    fileprivate func readableColorColorForBackgroundColor(_ backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
         
         let bgDarknessScore = darknessScoreOfColor(backgroundColor)
-        let count = CGColorGetNumberOfComponents(fromColor.CGColor);
-        let componentColors = CGColorGetComponents(fromColor.CGColor);
+        let count = fromColor.cgColor.numberOfComponents;
+        let componentColors = fromColor.cgColor.components;
         var madeColor = fromColor
         
         var r = 0.0
@@ -185,19 +185,19 @@ public extension UIView {
         var b = 0.0
         
         if (count == 2) {
-            r = Double(componentColors[0] * CGFloat(255.0))
-            g = Double(componentColors[0] * CGFloat(255.0))
-            b = Double(componentColors[0] * CGFloat(255.0))
+            r = Double((componentColors?[0])! * CGFloat(255.0))
+            g = Double((componentColors?[0])! * CGFloat(255.0))
+            b = Double((componentColors?[0])! * CGFloat(255.0))
         }
         else if (count == 4) {
-            r = Double(componentColors[0] * CGFloat(255.0))
-            g = Double(componentColors[1] * CGFloat(255.0))
-            b = Double(componentColors[2] * CGFloat(255.0))
+            r = Double((componentColors?[0])! * CGFloat(255.0))
+            g = Double((componentColors?[1])! * CGFloat(255.0))
+            b = Double((componentColors?[2])! * CGFloat(255.0))
         }
         wargPrint("\nBackground color: " + hexStringFromColor(backgroundColor)  + "\n")
         wargPrint("\nFind right color using " + strategy.name)
 
-        if strategy == .ColorMatchingStrategyLinear {
+        if strategy == .colorMatchingStrategyLinear {
            
             if (bgDarknessScore >= 125) {
                 //Background is made of a light color
@@ -206,7 +206,7 @@ public extension UIView {
                 wargPrint("Decreasing")
                 wargPrint("******\n")
                 
-                for var index = 55; index > 0; index-- {
+                for index in ((0 + 1)...55).reversed() {
                     
                     let factor = Double(index) / 55.0
                     
@@ -247,7 +247,7 @@ public extension UIView {
                 wargPrint("Increasing")
                 wargPrint("******\n")
                 
-                for var index = 0; index < 55; index++ {
+                for index in 0 ..< 55 {
                     
                     let factor = Double(index) / 55.0
                     
@@ -299,7 +299,7 @@ private extension UIView {
         }
     }
     
-    func wargPrint(message: String) {
+    func wargPrint(_ message: String) {
         if self.isVerbose {
             print(message)
         }

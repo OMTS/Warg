@@ -1,16 +1,16 @@
 {
   "name": "Warg",
-  "version": "0.1.0",
-  "summary": "A short description of Warg.",
-  "description": "",
-  "homepage": "https://github.com/<GITHUB_USERNAME>/Warg",
+  "version": "0.1.3",
+  "summary": "An acceibility UIView extension that makes icons and text visible on any background",
+  "description": "The Warg extension will give any UIView the ability to expose a displayable forground color\nbased on the W3C accessibility technics for color and contrast : http://www.w3.org/WAI/ER/WD-AERT/#color-contrast",
+  "homepage": "https://github.com/OMTS/Warg.git",
   "license": "MIT",
   "authors": {
     "Iman Zarrabian": "iman@omts.fr"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/Warg.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/OMTS/Warg.git",
+    "tag": "0.1.3"
   },
   "platforms": {
     "ios": "8.0"

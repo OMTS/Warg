@@ -1,13 +1,13 @@
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
-target 'Warg_Example', :exclusive => true do
+target 'Warg_Example' do
   pod "Warg", :path => "../"
 end
 
-target 'Warg_Tests', :exclusive => true do
-  pod "Warg", :path => "../"
+target 'Warg_Tests' do
+	pod "Warg", :path => "../"
 
-  pod 'Quick', '~> 0.8.0'
-  pod 'Nimble', '3.0.0'
+#	pod 'Quick', '~> 0.8.0'
+#	pod 'Nimble', '3.0.0'
 end

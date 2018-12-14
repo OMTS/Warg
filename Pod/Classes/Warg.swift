@@ -44,7 +44,7 @@ public extension UIView {
      Returns the first visible color by humans for a foreground content when displayed on the top of the receiver.
      
      - Parameter rect:  The rect (in the receiver coordinates) in which the forground content will be displayed.
-     - Parameter preferredColor: The color that you would preferaly like to use (this is usually the color given by a creative). This param is optional and the default value will be the color of the receiver in the rect provided.
+     - Parameter preferredColor: The color that you would preferaly like to use (this is usually the color given by a designer). This param is optional and the default value will be the color of the receiver in the rect provided.
      - Parameter strategy: The startegy that will be applied when modifying the prefered color to find the first visible one. This param is optional and the default value is ColorMatchingStrategy.ColorMatchingStrategyLinear.
      - Parameter isVerbose: A boolean indicating if the alogithm should print all the steps during computation. This param is optional and the default value is false.
 
@@ -67,8 +67,7 @@ public extension UIView {
         
         if let prefColor = preferredColor {
             return readableColorColorForBackgroundColor(color, fromColor:prefColor, strategy: strategy)
-        }
-        else {
+        } else {
             return readableColorColorForBackgroundColor(color, fromColor:color, strategy: strategy)
         }
     }
@@ -80,7 +79,7 @@ public extension UIView {
         var a: CGFloat = 0
         
         color.getRed(&r, green: &g, blue: &b, alpha: &a)
-        let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        let rgb: Int = (Int)( r * 255 ) << 16 | (Int)( g * 255 ) << 8 | (Int)( b * 255 ) << 0
         
         return NSString(format:"#%06x", rgb) as String
     }
@@ -123,8 +122,7 @@ public extension UIView {
             let multiplier = alpha/255.0
             
             return UIColor(red: CGFloat(rgba[0]) * multiplier, green: CGFloat(rgba[1]) * multiplier, blue: CGFloat(rgba[2]) * multiplier, alpha: alpha)
-        }
-        else {
+        } else {
             return UIColor(red: CGFloat(rgba[0])/255.0, green: CGFloat(rgba[1])/255.0, blue: CGFloat(rgba[2])/255.0, alpha: CGFloat(rgba[3])/255.0)
         }
     }
@@ -173,12 +171,12 @@ public extension UIView {
     }
     
     
-    fileprivate func readableColorColorForBackgroundColor(_ backgroundColor: UIColor, fromColor: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
+    fileprivate func readableColorColorForBackgroundColor(_ backgroundColor: UIColor, fromColor color: UIColor, strategy: ColorMatchingStrategy) -> UIColor {
         
         let bgDarknessScore = darknessScoreOfColor(backgroundColor)
-        let count = fromColor.cgColor.numberOfComponents;
-        let componentColors = fromColor.cgColor.components;
-        var madeColor = fromColor
+        let count = color.cgColor.numberOfComponents;
+        let componentColors = color.cgColor.components;
+        var madeColor = color
         
         var r = 0.0
         var g = 0.0
@@ -188,8 +186,7 @@ public extension UIView {
             r = Double((componentColors?[0])! * CGFloat(255.0))
             g = Double((componentColors?[0])! * CGFloat(255.0))
             b = Double((componentColors?[0])! * CGFloat(255.0))
-        }
-        else if (count == 4) {
+        } else if (count == 4) {
             r = Double((componentColors?[0])! * CGFloat(255.0))
             g = Double((componentColors?[1])! * CGFloat(255.0))
             b = Double((componentColors?[2])! * CGFloat(255.0))
@@ -238,8 +235,7 @@ public extension UIView {
                         break
                     }
                 }
-            }
-            else {
+            } else {
                 
                 //Background is made of a dark color
                 //We have to increase RGB values of the from color
